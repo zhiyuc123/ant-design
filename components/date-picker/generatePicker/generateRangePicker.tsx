@@ -104,6 +104,21 @@ export default function generateRangePicker<DateType extends AnyObject>(
     // ============================ zIndex ============================
     const [zIndex] = useZIndex('DatePicker', props.popupStyle?.zIndex as number);
 
+    // ===================== Panel Behavior =====================
+    const handlePanelChange = (values, modes) => {
+      if (modes[0] === 'date' && modes[1] === 'date') {
+        // Ensure the right panel does not jump when the left panel changes
+        const [start, end] = values || [];
+        if (start && end) {
+          restProps.onPanelChange?.([start, end], modes);
+        } else {
+          restProps.onPanelChange?.(values, modes);
+        }
+      } else {
+        restProps.onPanelChange?.(values, modes);
+      }
+    };
+
     return wrapCSSVar(
       <NoCompactStyle>
         <RCRangePicker<DateType>
@@ -164,6 +179,7 @@ export default function generateRangePicker<DateType extends AnyObject>(
             },
           }}
           allowClear={mergedAllowClear}
+          onPanelChange={handlePanelChange}
         />
       </NoCompactStyle>,
     );
